@@ -1,10 +1,13 @@
 import { Container, Graphics } from "pixi.js";
 
 export default class Hero extends Container {
-  #GRAVITY_FORCE: number = 1;
+  #GRAVITY_FORCE: number = 0.1;
+  #velocityX: number = 0;
+  #velocityY: number = 0;
 
   constructor() {
     super();
+
     const view = new Graphics();
     view.lineStyle(1, 0xff0000);
     view.drawRect(0, 0, 20, 60);
@@ -14,7 +17,13 @@ export default class Hero extends Container {
 
   // el método update() se llama en cada fotograma
   update(): void {
-    this.x += this.#GRAVITY_FORCE;
-    this.y += this.#GRAVITY_FORCE;
+    this.#velocityY += this.#GRAVITY_FORCE;
+    this.y += this.#velocityY;
+  }
+
+  // el método stay() se llama cuando el héroe colisiona con una plataforma
+  // y se queda en ella
+  stay(): void {
+    this.#velocityY = 0;
   }
 }

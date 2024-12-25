@@ -2,6 +2,8 @@ import Hero from "./Entities/Hero";
 import Platform from "./Entities/Platform";
 
 export default class Game {
+  // Creamos propiedades con #
+  // para que sean propiedades privadas
   #pixiApp: any;
   #hero: any;
   #platforms: any = [];
@@ -12,7 +14,7 @@ export default class Game {
     // Creamos un héroe
     this.#hero = new Hero();
     this.#hero.x = 100;
-    this.#hero.y = 200;
+    this.#hero.y = 100;
     // Añadimos el héroe al escenario
     this.#pixiApp.stage.addChild(this.#hero);
 
@@ -59,14 +61,28 @@ export default class Game {
     // Update game logic here
     // por ejemplo, actualizamos la posición del héroe
     this.#hero.update();
-
     for (let i = 0; i < this.#platforms.length; i++) {
-      // Comprobamos si el héroe colisiona con la plataforma
-      if (this.isCheckAABB(this.#hero, this.#platforms[i])) {
-        // Si colisiona, establecemos la posición del héroe
-        // en la parte superior de la plataforma
-        this.#hero.y = prevPoint.y;
+      // Verifica si el héroe colisiona con la plataforma actual usando AABB (Axis-Aligned Bounding Box)
+      if (!this.isCheckAABB(this.#hero, this.#platforms[i])) {
+        // Si no hay colisión, continúa con la siguiente plataforma
+        continue;
       }
+
+      // Guarda la posición actual en Y del héroe
+      const curry = this.#hero.y;
+      // Restaura la posición anterior en Y del héroe
+      this.#hero.y = prevPoint.y;
+      // Verifica nuevamente si hay colisión con la plataforma actual
+      if (!this.isCheckAABB(this.#hero, this.#platforms[i])) {
+        this.#hero.stay();
+        // Si no hay colisión, continúa con la siguiente plataforma
+        continue;
+      }
+
+      // Restaura la posición en Y del héroe a su valor original
+      this.#hero.y = curry;
+      // Restaura la posición en X del héroe a su valor anterior
+      this.#hero.x = prevPoint.x;
     }
   }
 
